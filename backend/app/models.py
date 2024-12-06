@@ -1,22 +1,29 @@
-from sqlalchemy import Column, Integer, String, JSON, DateTime, Float
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 Base = declarative_base()
 
-class OptimizationForm(Base):
-    __tablename__ = "optimization_forms"
-
-    id = Column(Integer, primary_key=True, index=True)
-    lab_name = Column(String, index=True)
-    optimization_type = Column(String)
-    description = Column(String)
-    improvement = Column(Float)
+class Optimization(Base):
+    __tablename__ = "optimizations"
     
-    # JSON fields for optimization configuration
-    objective = Column(JSON)  # {type: "maximize/minimize", target: "target_name"}
-    parameters = Column(JSON)  # {param_name: {min: value, max: value, step: value}}
-    constraints = Column(JSON)  # {constraint_name: {type: "equality/inequality", value: expression}}
-    
+    id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
+    laboratory_info = Column(JSON)
+    personnel_requirements = Column(JSON)
+    file_path = Column(String)
+    
+    objectives = relationship("OptimizationObjective", back_populates="optimization")
+
+class OptimizationObjective(Base):
+    __tablename__ = "optimization_objectives"
+    
+    id = Column(Integer, primary_key=True)
+    optimization_id = Column(Integer, ForeignKey("optimizations.id"))
+    name = Column(String)
+    unit = Column(String)
+    description = Column(String)
+    priority = Column(String)
+    
+    optimization = relationship("Optimization", back_populates="objectives") 

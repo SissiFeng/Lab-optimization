@@ -7,17 +7,17 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 frontend/
 ├── src/
 │   ├── components/
-│   │   ├── LaboratoryInformation.vue     # 实验室基本信息组件
-│   │   ├── LaboratoryOptimizationForm.vue # 主表单组件
-│   │   ├── OptimizationObjectives.vue    # 优化目标组件
-│   │   └── PersonnelRequirements.vue     # 人员需求组件
+│   │   ├── LaboratoryInformation.vue     # Laboratory Information Component
+│   │   ├── LaboratoryOptimizationForm.vue # Main Form Component
+│   │   ├── OptimizationObjectives.vue    # Optimization Objectives Component
+│   │   └── PersonnelRequirements.vue     # Personnel Requirements Component
 │   ├── types/
-│   │   └── types.ts                      # TypeScript 类型定义
-│   ├── App.vue                           # 根组件
-│   ├── main.js                           # 入口文件
-│   ├── index.css                         # Tailwind CSS 导入
-│   └── style.css                         # 全局样式
-├── tailwind.config.js                    # Tailwind 配置
-├── postcss.config.js                     # PostCSS 配置
-├── package.json                          # 项目依赖
-└── vite.config.js                        # Vite 配置
+│   │   └── types.ts                      # TypeScript Type Definitions
+│   ├── App.vue                           # Root Component
+│   ├── main.js                           # Entry File
+│   ├── index.css                         # Tailwind CSS Import
+│   └── style.css                         # Global Styles
+├── tailwind.config.js                    # Tailwind Configuration
+├── postcss.config.js                     # PostCSS Configuration
+├── package.json                          # Project Dependencies
+└── vite.config.js                        # Vite Configuration

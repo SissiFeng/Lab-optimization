@@ -1,121 +1,94 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from . import models, schemas, database
-from typing import List
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+import json
+from datetime import datetime
+import os
 
-app = FastAPI(title="Lab Optimization Survey")
+app = FastAPI()
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Data model definitions
+class LaboratoryInfo(BaseModel):
+    labName: str
+    experimentName: str
+    duration: str
+    sop: str
+    equipment: str
 
-# Create database tables
-models.Base.metadata.create_all(bind=database.engine)
+class PersonnelRequirement(BaseModel):
+    requirements: str
+    qualifications: str
 
-@app.get("/api/form-config")
-async def get_form_config():
-    """Return form configuration"""
-    return {
-        "title": "Lab Optimization Survey",
-        "fields": [
-            {
-                "type": "text",
-                "label": "Lab Name",
-                "name": "lab_name",
-                "placeholder": "Enter lab name",
-                "required": True
-            },
-            {
-                "type": "select",
-                "label": "Optimization Type",
-                "name": "optimization_type",
-                "options": [
-                    {"value": "algorithm", "label": "Algorithm Optimization"},
-                    {"value": "hardware", "label": "Hardware Optimization"},
-                    {"value": "process", "label": "Process Optimization"}
-                ],
-                "required": True
-            },
-            {
-                "type": "textarea",
-                "label": "Description",
-                "name": "description",
-                "placeholder": "Describe the optimization details",
-                "required": True
-            },
-            {
-                "type": "number",
-                "label": "Improvement (%)",
-                "name": "improvement",
-                "placeholder": "Enter improvement percentage",
-                "required": True
-            },
-            {
-                "type": "select",
-                "label": "Optimization Goal",
-                "name": "objective_type",
-                "options": [
-                    {"value": "maximize", "label": "Maximize"},
-                    {"value": "minimize", "label": "Minimize"}
-                ],
-                "required": True
-            },
-            {
-                "type": "text",
-                "label": "Optimization Target",
-                "name": "objective_target",
-                "placeholder": "Enter optimization target (e.g., efficiency)",
-                "required": True
-            },
-            {
-                "type": "json_editor",
-                "label": "Parameters",
-                "name": "parameters",
-                "placeholder": "Define parameter ranges",
-                "required": True,
-                "example": {
-                    "temperature": {"min": 20, "max": 80, "step": 5},
-                    "pressure": {"min": 1, "max": 10, "step": 0.5}
-                }
-            },
-            {
-                "type": "json_editor",
-                "label": "Constraints",
-                "name": "constraints",
-                "placeholder": "Define constraints",
-                "required": True,
-                "example": {
-                    "total_flow": {"type": "equality", "value": "x + y = 1"},
-                    "temperature": {"type": "inequality", "value": "T <= 100"}
-                }
-            }
-        ]
-    }
+class OptimizationObjective(BaseModel):
+    name: str
+    unit: str
+    description: str
+    priority: str
 
-@app.post("/api/submit-form", response_model=schemas.OptimizationFormResponse)
-async def submit_form(form: schemas.OptimizationFormCreate, db: Session = Depends(database.get_db)):
-    """Handle form submission"""
-    db_form = models.OptimizationForm(
-        lab_name=form.lab_name,
-        optimization_type=form.optimization_type,
-        description=form.description,
-        improvement=form.improvement,
-        objective=form.objective.dict(),
-        parameters=form.parameters.dict(),
-        constraints=form.constraints.dict()
-    )
-    db.add(db_form)
-    db.commit()
-    db.refresh(db_form)
-    return db_form
+class OptimizationForm(BaseModel):
+    laboratoryInfo: LaboratoryInfo
+    personnelRequirements: PersonnelRequirement
+    objectives: List[OptimizationObjective]
 
-@app.get("/api/forms", response_model=List[schemas.OptimizationFormResponse])
-async def get_forms(db: Session = Depends(database.get_db)):
-    """Get all submitted forms"""
-    return db.query(models.OptimizationForm).all() 
+@app.post("/api/optimization")
+async def create_optimization(form: OptimizationForm):
+    try:
+        # Generate unique filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"optimization_{timestamp}.json"
+        
+        # Ensure directory exists
+        os.makedirs("data/optimizations", exist_ok=True)
+        
+        # Save as JSON file
+        file_path = f"data/optimizations/{filename}"
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(form.dict(), f, ensure_ascii=False, indent=2)
+            
+        # TODO: Save to database
+        # save_to_database(form)
+            
+        return {
+            "status": "success",
+            "message": "Optimization form saved successfully",
+            "file": filename
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 获取所有优化记录
+@app.get("/api/optimizations")
+async def get_optimizations():
+    try:
+        optimizations = []
+        directory = "data/optimizations"
+        
+        if os.path.exists(directory):
+            for filename in os.listdir(directory):
+                if filename.endswith(".json"):
+                    with open(os.path.join(directory, filename), "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        optimizations.append({
+                            "id": filename.replace("optimization_", "").replace(".json", ""),
+                            "data": data
+                        })
+                        
+        return optimizations
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 获取单个优化记录
+@app.get("/api/optimization/{optimization_id}")
+async def get_optimization(optimization_id: str):
+    try:
+        file_path = f"data/optimizations/optimization_{optimization_id}.json"
+        
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Optimization not found")
+            
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 

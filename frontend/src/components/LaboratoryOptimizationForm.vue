@@ -47,17 +47,24 @@ const formData = reactive<FormData>({
 const saveForm = async () => {
   try {
     console.log('Form data:', formData);
-    // TODO: 发送到后端
-    // const response = await fetch('/api/submit-form', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(formData)
-    // });
-    
+    const response = await fetch('/api/optimization', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Save successful:', result);
+    alert('Form saved successfully!');
   } catch (error) {
     console.error('Error saving form:', error);
+    alert('Failed to save form. Please try again.');
   }
 };
 </script>

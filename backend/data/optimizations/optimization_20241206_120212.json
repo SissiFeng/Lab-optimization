@@ -1,0 +1,21 @@
+{
+  "laboratoryInfo": {
+    "labName": "sissi",
+    "experimentName": "test1",
+    "duration": "1hour",
+    "sop": "ljjskdkk",
+    "equipment": "dfsd\ndsfs\ndsfsd"
+  },
+  "personnelRequirements": {
+    "requirements": "test",
+    "qualifications": "test"
+  },
+  "objectives": [
+    {
+      "name": "BO1",
+      "unit": "ml",
+      "description": "sdfsdf",
+      "priority": "medium"
+    }
+  ]
+}
