@@ -2,6 +2,8 @@
 
 A web application for configuring and managing laboratory optimization experiments.
 
+![Project Screenshot](docs/images/screenshot.png)
+
 ## Features
 - Dynamic form for laboratory experiment configuration
 - Personnel requirements management
@@ -9,51 +11,32 @@ A web application for configuring and managing laboratory optimization experimen
 - JSON data export
 - Database storage
 
-## Tech Stack
-- Frontend: Vue 3 + TypeScript + Tailwind CSS
-- Backend: FastAPI + SQLAlchemy + PostgreSQL
+## Quick Start
 
-## Getting Started
-
-### Option 1: Using Docker (Recommended)
-
-1. Install Docker and Docker Compose
-2. Clone the repository:
+### Using Docker (Recommended)
 ```bash
+# Clone the repository
 git clone https://github.com/SissiFeng/Lab-optimization.git
 cd Lab-optimization
+
+# Start the application
+docker-compose up
 ```
 
-3. Create and configure environment file:
-```bash
-cp backend/.env.example backend/.env
-# Edit backend/.env with your database settings
-```
-
-4. Build and run with Docker:
-```bash
-docker-compose up --build
-```
-
-5. Access the application:
+Access the application at:
 - Frontend: http://localhost:5173
 - API Documentation: http://localhost:8000/docs
 
-### Option 2: Manual Installation
+### Manual Setup
 
-#### Prerequisites
-- Node.js >= 16
-- Python >= 3.8
-- PostgreSQL
-
-#### Frontend Setup
+1. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-#### Backend Setup
+2. Backend Setup
 ```bash
 cd backend
 python -m venv venv
@@ -62,50 +45,40 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-## Usage
+## Environment Variables
 
-1. Fill in the Laboratory Information:
-   - Laboratory Name
-   - Experiment Name
-   - Duration
-   - SOP Reference
-   - Required Equipment
+Create `.env` file in backend directory:
+```env
+DATABASE_URL=postgresql://user:password@localhost/dbname
+SECRET_KEY=your-secret-key
+DEBUG=True
+```
 
-2. Specify Personnel Requirements:
-   - Requirements
-   - Qualifications
+## API Documentation
 
-3. Add Optimization Objectives:
-   - Click "Add Objective" to add multiple objectives
-   - For each objective, specify:
-     - Name
-     - Unit
-     - Description
-     - Priority
+API documentation is available at `http://localhost:8000/docs` when running the backend server.
 
-4. Submit the form:
-   - Click "Save Form" to submit
-   - The data will be saved as JSON and in the database
-   - You can view saved forms through the API
-
-## Development
-
-### Project Structure
+## Project Structure
 ```
 .
 ├── frontend/               # Vue.js frontend
 │   ├── src/
 │   │   ├── components/    # Vue components
-│   │   ├── types/        # TypeScript types
-│   │   └── ...
+│   │   └── types/        # TypeScript types
 │   └── ...
 └── backend/               # FastAPI backend
     ├── app/
     │   ├── models.py     # Database models
-    │   ├── main.py       # API endpoints
-    │   └── ...
+    │   └── main.py       # API endpoints
     └── ...
 ```
 
-## API Documentation
-API documentation is available at `http://localhost:8000/docs` when running the backend server.
+## Data Storage
+
+The application stores data in two ways:
+1. JSON files in `backend/data/optimizations/`
+2. PostgreSQL database (when configured)
+
+## Development
+
+See [Development Guide](docs/DEVELOPMENT.md) for detailed information.

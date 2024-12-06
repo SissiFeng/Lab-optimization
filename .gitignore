@@ -1,0 +1,24 @@
+# Environment
+.env
+venv/
+__pycache__/
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Data
+data/optimizations/*
+!data/optimizations/.gitkeep 
