@@ -2,7 +2,8 @@
 
 A web application for configuring and managing laboratory optimization experiments.
 
-![Project Screenshot](docs/images/screenshot.png)
+<img width="1240" alt="截屏2024-12-06 12 20 27" src="https://github.com/user-attachments/assets/2659b87f-1fb2-4d4e-a70a-93a32064d3a5">
+
 
 ## Features
 - Dynamic form for laboratory experiment configuration
